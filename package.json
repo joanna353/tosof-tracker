@@ -1,0 +1,15 @@
+son{
+  "name": "tosof-tracker",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "14.0.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "resend": "^2.0.0"
+  }
+}
