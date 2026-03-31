@@ -1,4 +1,4 @@
-jsexport default function Home() {
+export default function Home() {
   return (
     <div style={{margin: 0, padding: 0}}>
       <iframe 
