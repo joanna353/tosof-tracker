@@ -431,17 +431,19 @@ let state = {
 };
 
 function save() { try { localStorage.setItem("tosof14_v2", JSON.stringify(state)); } catch(e){} }
+function load() { try { const s = localStorage.getItem("tosof14_v2"); if(s) state = JSON.parse(s); } catch(e){} }
 
 async function saveToDb(type, data) {
   try {
-    await fetch('/api/' + type, {
+    const res = await fetch('/api/' + type, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
+    const json = await res.json();
+    console.log('saved to db:', type, json);
   } catch(e) { console.log('db save failed', e); }
 }
-function load() { try { const s = localStorage.getItem("tosof14_v2"); if(s) state = JSON.parse(s); } catch(e){} }
 
 function show(id) {
   ["s-signup","s-intake","s-intake-summary","s-home","s-done","s-green"].forEach(s => {
@@ -566,6 +568,12 @@ function showIntakeSummary() {
     });
   }
   show("s-intake-summary");
+  saveToDb("intake", {
+    email: state.userEmail,
+    name: state.userName,
+    answers: state.intakeAnswers,
+    insights: state.intakeInsights
+  });
 }
 
 function startTracker() {
@@ -665,15 +673,15 @@ function submitDay() {
   }
   state.submitted[day] = { mood: state.mood, sober: state.sober };
   save();
-  saveToDb('checkin', {
+  saveToDb("checkin", {
     email: state.userEmail,
     name: state.userName,
     day: day,
     mood: state.mood,
     sober: state.sober,
-    answers: Object.fromEntries(Object.entries(state.answers).filter(([k]) => k.startsWith(day + '-'))),
-    triggerTime: document.getElementById('trigger-time').value,
-    triggerBefore: document.getElementById('trigger-before').value
+    answers: Object.fromEntries(Object.entries(state.answers).filter(([k]) => k.startsWith(day + "-"))),
+    triggerTime: document.getElementById("trigger-time") ? document.getElementById("trigger-time").value : "",
+    triggerBefore: document.getElementById("trigger-before") ? document.getElementById("trigger-before").value : ""
   });
   if (day === 14) { showGreenRoom(); } else { showDone(); }
 }
