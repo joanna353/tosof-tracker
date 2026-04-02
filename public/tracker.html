@@ -458,7 +458,6 @@ async function doSignup() {
   const email = document.getElementById("inp-email").value.trim();
   if (!name || !email) return;
 
-  // check if user already exists in database
   try {
     const res = await fetch('/api/getuser', {
       method: 'POST',
@@ -467,7 +466,6 @@ async function doSignup() {
     });
     if (res.ok) {
       const { user, checkins } = await res.json();
-      // user exists - restore their progress
       state.userName = user.name;
       state.userEmail = email;
       state.intakeAnswers = user.intake_answers || [];
@@ -477,12 +475,35 @@ async function doSignup() {
       checkins.forEach(c => {
         state.submitted[c.day] = { mood: c.mood, sober: c.sober };
         state.moodHistory.push(c.mood);
+        if (c.answers) {
+          Object.entries(c.answers).forEach(([k, v]) => {
+            state.answers[c.day + '-' + k.split('-').pop()] = v;
+          });
+          const win = c.answers[c.day + '-q4'] || Object.values(c.answers).pop();
+          if (win && win.trim()) state.wins.push({day: c.day, text: win.trim()});
+          const trigger = c.answers[c.day + '-q2'] || Object.values(c.answers)[1];
+          if (trigger && trigger.trim()) state.triggers.push({day: c.day, text: trigger.trim()});
+        }
+        if (c.trigger_time && c.trigger_time !== 'no strong pull today') {
+          state.triggerTimes.push({day: c.day, time: c.trigger_time, before: c.trigger_before});
+        }
       });
       save();
       show("s-home");
       renderHome();
       return;
     }
+  } catch(e) {}
+
+  state.userName = name;
+  state.userEmail = email;
+  state.intakeStep = 0;
+  state.intakeAnswers = [];
+  state.intakeInsights = [];
+  save();
+  show("s-intake");
+  renderIntake();
+}
   } catch(e) {}
 
   // new user
