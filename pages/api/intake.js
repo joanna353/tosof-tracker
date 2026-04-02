@@ -30,8 +30,7 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Basic ${Buffer.from(process.env.FLODESK_API_KEY + ':').toString('base64')}`
-      },
+'Authorization': `Bearer ${process.env.FLODESK_API_KEY}`      },
       body: JSON.stringify({
         email,
         first_name: name,
