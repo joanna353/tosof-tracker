@@ -34,8 +34,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         email,
         first_name: name,
-        segments: ['14-day-tracker']
-      })
+segment_ids: ['69cecf8d1eb50e83ff1e5c3a']      })
     })
   } catch(e) {
     console.log('flodesk error', e)
