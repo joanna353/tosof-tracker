@@ -10,7 +10,6 @@ export default async function handler(req, res) {
   
   const { email, name, answers, insights } = req.body
 
-  // save to supabase
   const { error } = await supabase
     .from('users')
     .upsert([{ 
@@ -24,13 +23,14 @@ export default async function handler(req, res) {
 
   if (error) return res.status(500).json({ error })
 
-  // add to flodesk
   try {
     await fetch('https://api.flodesk.com/v1/subscribers', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-'Authorization': `Bearer ${process.env.FLODESK_API_KEY}`      },
+        'Authorization': `Basic ${Buffer.from(process.env.FLODESK_API_KEY + ':').toString('base64')}`,
+        'User-Agent': 'TOSOF Tracker (tosof-tracker.vercel.app)'
+      },
       body: JSON.stringify({
         email,
         first_name: name,
