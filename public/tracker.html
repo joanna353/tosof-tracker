@@ -472,6 +472,10 @@ async function doSignup() {
       state.intakeInsights = user.intake_insights || [];
       state.intakeStep = 10;
       state.currentDay = checkins.length > 0 ? Math.min(checkins[checkins.length-1].day + 1, 14) : 1;
+      state.wins = [];
+      state.triggers = [];
+      state.triggerTimes = [];
+      state.moodHistory = [];
       checkins.forEach(c => {
         state.submitted[c.day] = { mood: c.mood, sober: c.sober };
         state.moodHistory.push(c.mood);
