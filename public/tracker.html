@@ -453,10 +453,39 @@ function show(id) {
   window.scrollTo(0,0);
 }
 
-function doSignup() {
+async function doSignup() {
   const name = document.getElementById("inp-name").value.trim();
   const email = document.getElementById("inp-email").value.trim();
   if (!name || !email) return;
+
+  // check if user already exists in database
+  try {
+    const res = await fetch('/api/getuser', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    if (res.ok) {
+      const { user, checkins } = await res.json();
+      // user exists - restore their progress
+      state.userName = user.name;
+      state.userEmail = email;
+      state.intakeAnswers = user.intake_answers || [];
+      state.intakeInsights = user.intake_insights || [];
+      state.intakeStep = 10;
+      state.currentDay = checkins.length > 0 ? Math.min(checkins[checkins.length-1].day + 1, 14) : 1;
+      checkins.forEach(c => {
+        state.submitted[c.day] = { mood: c.mood, sober: c.sober };
+        state.moodHistory.push(c.mood);
+      });
+      save();
+      show("s-home");
+      renderHome();
+      return;
+    }
+  } catch(e) {}
+
+  // new user
   state.userName = name;
   state.userEmail = email;
   state.intakeStep = 0;
