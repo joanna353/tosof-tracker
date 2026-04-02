@@ -444,7 +444,6 @@ async function saveToDb(type, data) {
     console.log('saved to db:', type, json);
   } catch(e) { console.log('db save failed', e); }
 }
-
 function show(id) {
   ["s-signup","s-intake","s-intake-summary","s-home","s-done","s-green"].forEach(s => {
     document.getElementById(s).classList.remove("active");
