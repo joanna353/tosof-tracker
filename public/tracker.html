@@ -132,7 +132,7 @@
           <div class="label">were you sober today?</div>
           <div class="sober-row">
             <button class="sober-btn" id="sb-yes" onclick="setSober(true)">yes</button>
-            <button class="sober-btn" id="sb-no" onclick="setSober(false)">i drank today</button>
+            <button class="sober-btn" id="sb-no" onclick="setSober(false)">not today</button>
           </div>
         </div>
         <div class="card">
@@ -221,8 +221,8 @@
     <div class="headline" id="done-headline"></div>
     <div class="coach-msg" id="done-msg"></div>
     <div class="grid2" style="margin-bottom:0.75rem;">
-<div class="metric"><div class="label">days in</div><div class="stat-num" id="done-days-in"></div><div class="stat-sub">days</div></div>
-     <div class="metric"><div class="label">days left</div><div class="stat-num" id="done-left"></div><div class="stat-sub">to go</div></div>
+      <div class="metric"><div class="label">streak</div><div class="stat-num" id="done-streak"></div><div class="stat-sub">days</div></div>
+      <div class="metric"><div class="label">days left</div><div class="stat-num" id="done-left"></div><div class="stat-sub">to go</div></div>
     </div>
     <div style="font-size:13px;color:#888;text-align:center;margin-bottom:1rem;">your next check-in link arrives at 8am tomorrow.</div>
     <button class="primary-btn" onclick="nextDay()">continue to next day →</button>
@@ -444,6 +444,7 @@ async function saveToDb(type, data) {
     console.log('saved to db:', type, json);
   } catch(e) { console.log('db save failed', e); }
 }
+
 function show(id) {
   ["s-signup","s-intake","s-intake-summary","s-home","s-done","s-green"].forEach(s => {
     document.getElementById(s).classList.remove("active");
@@ -492,20 +493,8 @@ async function doSignup() {
       renderHome();
       return;
     }
-  } catch(e) {}
+  } catch(e) { console.log('getuser error', e); }
 
-  state.userName = name;
-  state.userEmail = email;
-  state.intakeStep = 0;
-  state.intakeAnswers = [];
-  state.intakeInsights = [];
-  save();
-  show("s-intake");
-  renderIntake();
-}
-  } catch(e) {}
-
-  // new user
   state.userName = name;
   state.userEmail = email;
   state.intakeStep = 0;
@@ -716,7 +705,7 @@ function submitDay() {
   const trigger = state.answers[day+"-q2"];
   if (trigger && trigger.trim()) state.triggers.push({day, text: trigger.trim()});
   const triggerTime = document.getElementById("trigger-time") ? document.getElementById("trigger-time").value : "";
-const triggerBefore = document.getElementById("trigger-before") ? document.getElementById("trigger-before").value : "";
+  const triggerBefore = document.getElementById("trigger-before") ? document.getElementById("trigger-before").value : "";
   if (triggerTime && triggerTime !== "no strong pull today") {
     state.triggerTimes.push({day, time: triggerTime, before: triggerBefore});
   }
@@ -739,12 +728,12 @@ function showDone() {
   const day = state.currentDay;
   const done = Object.keys(state.submitted).length;
   const didDrink = state.sober === false;
-document.getElementById("done-headline").textContent = didDrink ? "day " + day + " logged." : "day " + day + " done. 🖤";
+  document.getElementById("done-headline").textContent = didDrink ? "day " + day + " logged." : "day " + day + " done. 🖤";
   const soberMsgs = ["","showing up on day 1 is everything. it starts here.","two days. the shame and the pride sitting side by side — that's exactly right.","three days in. you're getting clear on what actually matters. keep going.","the weekend is hard. you showed up anyway. that counts.","five days. you're taking your power back one day at a time.","nearly a week. the honest look back takes courage. you did it.","a whole week. the foundations are everything. one thing at a time.","day 8. that mean voice has been there a long time. you're starting to see it for what it is.","the grey days are real. they pass. you're still here.","double figures. you are genuinely not the same person who started this.","halfway. the misalignment you're feeling? that's your real self pushing through.","the joy is in there. you're finding it.","day 13. you know the real cost now. that knowledge changes things.",""];
-const drinkMsgs = ["","one day doesn't define the journey. you still showed up and logged it. that matters.","logging it honestly is the work. you're still here.","three days of data. one night out doesn't erase that.","the weekend is hard. you logged it. that's more than most people do.","five days of showing up. one night doesn't change that.","you logged it. that's the opposite of giving up.","a week of data. one night tells you something — what was going on?","you logged it instead of hiding from it. that's huge actually.","one night in nine days. you're still doing this.","ten days of showing up. one night is information, not failure.","halfway and still here. that's what matters.","twelve days of honesty. keep going.","one night doesn't undo thirteen days of work.",""];
-const msgs = didDrink ? drinkMsgs : soberMsgs;
+  const drinkMsgs = ["","one day doesn't define the journey. you still showed up and logged it. that matters.","logging it honestly is the work. you're still here.","three days of data. one night out doesn't erase that.","the weekend is hard. you logged it. that's more than most people do.","five days of showing up. one night doesn't change that.","you logged it. that's the opposite of giving up.","a week of data. one night tells you something — what was going on?","you logged it instead of hiding from it. that's huge actually.","one night in nine days. you're still doing this.","ten days of showing up. one night is information, not failure.","halfway and still here. that's what matters.","twelve days of honesty. keep going.","one night doesn't undo thirteen days of work.",""];
+  const msgs = didDrink ? drinkMsgs : soberMsgs;
   document.getElementById("done-msg").textContent = '"' + (msgs[day] || "keep going. you're doing it.") + '"';
-  document.getElementById("done-days-in").textContent = done;
+  document.getElementById("done-streak").textContent = done;
   document.getElementById("done-left").textContent = Math.max(0, 14-day);
   show("s-done");
 }
