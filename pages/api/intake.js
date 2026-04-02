@@ -24,18 +24,25 @@ export default async function handler(req, res) {
   if (error) return res.status(500).json({ error })
 
   try {
+    const auth = `Basic ${Buffer.from(process.env.FLODESK_API_KEY + ':').toString('base64')}`;
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': auth,
+      'User-Agent': 'TOSOF Tracker (tosof-tracker.vercel.app)'
+    };
+
     await fetch('https://api.flodesk.com/v1/subscribers', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${Buffer.from(process.env.FLODESK_API_KEY + ':').toString('base64')}`,
-        'User-Agent': 'TOSOF Tracker (tosof-tracker.vercel.app)'
-      },
-      body: JSON.stringify({
-        email,
-        first_name: name,
-segment_ids: ['69cecf8d1eb50e83ff1e5c3a']      })
-    })
+      headers,
+      body: JSON.stringify({ email, first_name: name })
+    });
+
+    await fetch(`https://api.flodesk.com/v1/subscribers/${email}/segments`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ segment_ids: ['69cecf8d1eb50e83ff1e5c3a'] })
+    });
+
   } catch(e) {
     console.log('flodesk error', e)
   }
