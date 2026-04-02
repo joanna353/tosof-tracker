@@ -666,8 +666,8 @@ function submitDay() {
   if (win && win.trim()) state.wins.push({day, text: win.trim()});
   const trigger = state.answers[day+"-q2"];
   if (trigger && trigger.trim()) state.triggers.push({day, text: trigger.trim()});
-  const triggerTime = document.getElementById("trigger-time").value;
-  const triggerBefore = document.getElementById("trigger-before").value;
+  const triggerTime = document.getElementById("trigger-time") ? document.getElementById("trigger-time").value : "";
+const triggerBefore = document.getElementById("trigger-before") ? document.getElementById("trigger-before").value : "";
   if (triggerTime && triggerTime !== "no strong pull today") {
     state.triggerTimes.push({day, time: triggerTime, before: triggerBefore});
   }
