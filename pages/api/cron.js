@@ -53,19 +53,22 @@ export default async function handler(req, res) {
     const currentDay = (userCheckins.length || 0) + 1
     if (currentDay > 14) continue
 
-    await resend.emails.send({
-      from: 'joanna@theothersideoffear.co.uk',
-      to: user.email,
-      subject: `day ${currentDay} — your check-in is waiting`,
-      html: `
-        <div style="font-family:sans-serif;max-width:480px;margin:0 auto;background:#0a0a0a;color:#fff;padding:2rem;border-radius:12px;">
-          <div style="font-size:11px;letter-spacing:0.2em;color:#888;text-transform:uppercase;margin-bottom:1rem;">The Other Side of Fear</div>
-          <h2 style="font-weight:400;font-size:24px;margin-bottom:1rem;">day ${currentDay}, ${user.name}.</h2>
-          <p style="color:#ccc;line-height:1.7;margin-bottom:1.5rem;">your check-in is waiting. it takes 5 minutes and it's the most important thing you'll do today.</p>
-          <a href="https://tosof-tracker.vercel.app" style="display:block;background:#c9a96e;color:#0a0a0a;text-decoration:none;padding:0.9rem;text-align:center;border-radius:8px;font-weight:500;">do today's check-in →</a>
-          <p style="color:#555;font-size:12px;margin-top:1.5rem;text-align:center;">with love, Joanna x</p>
-        </div>`
-    })
+    const dayMessages = ["","the fact you're here — that you recognised something needed to change and actually did something about it — that is not small.","today we're getting honest about what this has actually been costing you. not just money — all of it.","what are the most important things in your life? and has your drinking been taking you toward or away from them?","the voice is probably getting louder — 'one drink won't hurt.' it won't be one. you know that.","you've been letting something else call the shots for a while. today is about remembering whose life this actually is.","look back over the last few months not with judgment, but like you're looking at the life of your best friend.","a whole week. today we look at the foundations — sleep, exercise, nutrition, hydration, connection.","today we're going somewhere important — the voice in your head. the one that's been keeping you small.","you might still feel like you're walking around in black and white. that's real. it's also temporary.","stand still for a second and look back at how far you've come. you are already not the same person.","something interesting starts happening around now — things that used to feel like home start feeling a bit off. that's your real self emerging.","you have to rediscover what actually brings you joy. not the boozy version. the real version.","today we're counting the real cost. not just of drinking — but of staying exactly where you are.","two whole weeks. don't skim past it. you said you'd do this and you did."];
+
+await resend.emails.send({
+  from: 'joanna@theothersideoffear.co.uk',
+  to: user.email,
+  subject: `day ${currentDay} — your check-in is waiting`,
+  html: `
+    <div style="font-family:sans-serif;max-width:480px;margin:0 auto;background:#0a0a0a;color:#fff;padding:2rem;border-radius:12px;">
+      <div style="font-size:11px;letter-spacing:0.2em;color:#888;text-transform:uppercase;margin-bottom:1rem;">The Other Side of Fear</div>
+      <h2 style="font-weight:400;font-size:24px;margin-bottom:1rem;">day ${currentDay}, ${user.name}.</h2>
+      <p style="color:#ccc;line-height:1.7;margin-bottom:1.5rem;font-style:italic;">"${dayMessages[currentDay] || 'your check-in is waiting.'}"</p>
+      <p style="color:#888;font-size:14px;line-height:1.7;margin-bottom:1.5rem;">it takes 5 minutes. it's the most important thing you'll do today.</p>
+      <a href="https://tosof-tracker.vercel.app" style="display:block;background:#c9a96e;color:#0a0a0a;text-decoration:none;padding:0.9rem;text-align:center;border-radius:8px;font-weight:500;">open day ${currentDay} →</a>
+      <p style="color:#555;font-size:12px;margin-top:1.5rem;text-align:center;">with love, Joanna x</p>
+    </div>`
+})
   }
 
   res.status(200).json({ ok: true, users: users.length })
