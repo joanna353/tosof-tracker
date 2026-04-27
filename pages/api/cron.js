@@ -13,7 +13,9 @@ export default async function handler(req, res) {
     return res.status(401).end()
   }
 
-  const { data: users } = await supabase.from('users').select('*')
+  const { data: allUsers } = await supabase.from('users').select('*')
+const blocklist = ['lucie.rosa.lanham@gmail.com']
+const users = (allUsers || []).filter(u => !blocklist.includes(u.email))
   const { data: checkins } = await supabase.from('checkins').select('*')
 
   const now = new Date()
